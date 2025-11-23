@@ -320,7 +320,6 @@ def mark_CAlphas_pairs(densMap, prot, uv_xl):
 
 
 def generate_solvent_accessible_surface(densMap, prot, aa1_CA, aa2_CA):
-
     """
 
     Returns masked array which functions as solvent accessible surface
