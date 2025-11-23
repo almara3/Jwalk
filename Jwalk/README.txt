@@ -21,9 +21,12 @@
 #===============================================================================
 
 INSTALLATION:
-Open a terminal session and a move to the directory Jwalk is in.
+Go to the directory that contains setup.py and run 
 
-type "setup.py install"
+```
+pip install .
+
+```
 
 RUNNING JWALK:
 

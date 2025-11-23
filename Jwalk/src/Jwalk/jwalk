@@ -138,7 +138,6 @@ def runJwalk(max_dist, vox, surface, xl_list, aa1, aa2, ncpus, pdb_list):
 
     """
     for pdb in pdb_list:
-
         print("calculating crosslinks on", pdb)
         # load pdb into Jwalk
         structure_instance = PDBTools.read_PDB_file(pdb)
@@ -149,9 +148,11 @@ def runJwalk(max_dist, vox, surface, xl_list, aa1, aa2, ncpus, pdb_list):
         if xl_list:  # if specific crosslinks need to be calculated
             crosslink_pairs, aa1_CA, aa2_CA = GridTools.mark_CAlphas_pairs(
                 grid, structure_instance, xl_list)
+            xl_list_basename = os.path.basename(xl_list)[:-4]
         else:
             crosslink_pairs = []  # na if searching every combination between residue types
             aa1_CA, aa2_CA = GridTools.markCAlphas(grid, structure_instance, aa1, aa2)
+            xl_list_basename = ""
 
         if surface:
             # check more rigorously if residues are solvent accessible or not
@@ -182,8 +183,8 @@ def runJwalk(max_dist, vox, surface, xl_list, aa1, aa2, ncpus, pdb_list):
         sasds = SASDTools.get_euclidean_distances(sasds, pdb, aa1, aa2)
 
         # output sasds to .pdb file and .txt file
-        PDBTools.write_sasd_to_txt(sasds, pdb)
-        PDBTools.write_sasd_to_pdb(dens_map, sasds, pdb)
+        PDBTools.write_sasd_to_txt(sasds, pdb, xl_list_basename)
+        PDBTools.write_sasd_to_pdb(dens_map, sasds, pdb, xl_list_basename)
         print(len(sasds), "SASDs calculated")
 
 

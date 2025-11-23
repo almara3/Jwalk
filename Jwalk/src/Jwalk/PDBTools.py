@@ -500,25 +500,30 @@ def read_PDB_file(filename, hetatm=False, water=False):
     return BioPy_Structure(atomList, filename, header, footer)
 
 
-def write_sasd_to_txt(sasds, pdb):
+def write_sasd_to_txt(sasds, pdb, xl_list_basename):
     """
-
-    Outputs sasds to .txt file
+    Outputs sasds to .tsv file
 
     Arguments:
 
-       *sasds*
+        *sasds*
            dictionary of sasds
-       *pdb*
+        *pdb*
            .pdb file sasds were calculated on
+        *xl_list_basename*
+            base name of the crosslink list file
     """
 
     if not os.path.exists('./Jwalk_results'):
         os.makedirs('./Jwalk_results')
 
-    with open('./Jwalk_results/%s_crosslink_list.txt' % pdb[:-4], 'w') as outf:
+    if xl_list_basename != "" and not xl_list_basename.startswith("_"):
+        xl_list_basename = "_" + xl_list_basename
 
-        outf.write(' '.join('{0:<13}'.format(col) for col in [
+    with open(f'./Jwalk_results/{os.path.basename(pdb)[:-4]}{xl_list_basename}_crosslink_list.tsv',
+              'w') as outf:
+
+        outf.write('\t'.join('{0:<13}'.format(col) for col in [
             'Index', 'Model', 'Atom1', 'Atom2', 'SASD', 'Euclidean Distance']))
         outf.write('\n')
         index = 1
@@ -530,13 +535,13 @@ def write_sasd_to_txt(sasds, pdb):
             atom2 = ('%s-%d-%s-CA' % (res2, aa2, chain2))
             sasd = xl[2]
             ed = xl[3]
-            outf.write(' '.join('{0:<13}'.format(col) for col in [
+            outf.write('\t'.join('{0:<13}'.format(col) for col in [
                 index, pdb, atom1, atom2, sasd, ed]))
             outf.write('\n')
             index += 1
 
 
-def write_sasd_to_pdb(dens_map, sasds, pdb):
+def write_sasd_to_pdb(dens_map, sasds, pdb, xl_list_basename):
     """
     Outputs sasds to .pdb file
 
@@ -564,7 +569,11 @@ def write_sasd_to_pdb(dens_map, sasds, pdb):
 
         path_coord[xl] = a
 
-    with open('./Jwalk_results/%s_crosslinks.pdb' % pdb[:-4], 'w') as pdb:
+    if xl_list_basename != "" and not xl_list_basename.startswith("_"):
+        xl_list_basename = "_" + xl_list_basename
+
+    with open(f'./Jwalk_results/{os.path.basename(pdb)[:-4]}{xl_list_basename}_crosslinks.pdb',
+              'w') as pdb:
 
         m_count = 1
         for xl in path_coord:
