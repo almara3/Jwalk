@@ -20,7 +20,7 @@
 #
 # ===============================================================================
 
-from multiprocessing import Pool, freeze_support
+import multiprocessing as mp
 import itertools
 import math
 
@@ -399,12 +399,12 @@ def parallel_BFS(aa1_voxels, aa2_voxels, dens_map, aa1_CA, aa2_CA, crosslink_pai
 
     """
 
-    freeze_support()
+    mp.freeze_support()
     final_XL = {}
 
     if xl_list:
         if ncpus > 1:
-            pool = Pool(ncpus)
+            pool = mp.Pool(ncpus)
             xl_dictionaries = pool.map(
                 calculate_specific_SASD_star,
                 zip(
@@ -430,8 +430,7 @@ def parallel_BFS(aa1_voxels, aa2_voxels, dens_map, aa1_CA, aa2_CA, crosslink_pai
 
     else:
         if ncpus > 1:
-
-            pool = Pool(ncpus)
+            pool = mp.Pool(ncpus)
             xl_dictionaries = pool.map(
                 calculate_SASDs_star,
                 zip(

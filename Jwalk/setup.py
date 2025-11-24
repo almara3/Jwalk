@@ -22,5 +22,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    scripts=['src/Jwalk/jwalk'],
+    scripts=['src/Jwalk/jwalk.py'],
 )

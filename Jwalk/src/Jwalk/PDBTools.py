@@ -500,6 +500,47 @@ def read_PDB_file(filename, hetatm=False, water=False):
     return BioPy_Structure(atomList, filename, header, footer)
 
 
+def get_aas_on_path(sasds, structure_instance, dens_map):
+    """
+    Outputs amino acids closest to the path of each sasd to a list
+
+    Arguments:
+        *sasds*
+            dictionary of sasds
+        *structure_instance*
+            structure instance of the pdb sasds were calculated on
+        *dens_map*
+            Solvent accessible surface on masked array
+    Returns:
+        list of amino acids on the path of each sasd
+    """
+    apix = dens_map.apix
+    origin = dens_map.origin
+
+    aas_on_path = {}
+
+    for xl in sasds:
+        path_aas = []
+        for (x, y, z) in sasds[xl]:
+            x = (x*apix)+origin[0]
+            y = (y*apix)+origin[1]
+            z = (z*apix)+origin[2]
+            min_dist = float('inf')
+            closest_aa = None
+            for atom in structure_instance.atomList:
+                dist = ((atom.get_x() - x)**2 +
+                        (atom.get_y() - y)**2 +
+                        (atom.get_z() - z)**2)**0.5
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_aa = (atom.get_res(), atom.chain, atom.get_res_no())
+            if closest_aa not in path_aas:
+                path_aas.append(closest_aa)
+        aas_on_path[xl] = path_aas
+
+    return aas_on_path
+
+
 def write_sasd_to_txt(sasds, pdb, xl_list_basename):
     """
     Outputs sasds to .tsv file
