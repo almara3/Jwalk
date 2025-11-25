@@ -28,99 +28,6 @@ import argparse
 import multiprocessing as mp
 from Jwalk import PDBTools, GridTools, SurfaceTools, SASDTools
 
-# default parameters
-
-max_dist = 60
-vox = 1
-surface = False
-xl_path = ''
-aa1 = "LYS"
-aa2 = "LYS"
-ncpus = mp.cpu_count()
-pdb = ''
-
-amino_acids = {
-    "LYS": "lysines",
-    "CYS": "cysteines",
-    "ASP": "acidic residues",
-    "GLU": "acidic residues",
-    "VAL": "valines",
-    "ILE": "isoleucines",
-    "LEU": "leucines",
-    "ARG": "arginines",
-    "PRO": "prolines",
-    "GLY": "glycines",
-    "ALA": "alanines",
-    "TRP": "tryptophans",
-    "PHE": "phenylalanines",
-    "SER": "serines",
-    "GLN": "glutamines",
-    "HIS": "histidines",
-    "MET": "methionines",
-    "THR": "threonines",
-    "ASN": "asparagines",
-    "TYR": "tyrosines"}
-
-parser = argparse.ArgumentParser(description='JWALK: Calculate SASDs on your target PDB files')
-
-parser.add_argument('-lys', action="store_true",
-                    help='calculate lysine crosslinks (default)')
-parser.add_argument('-xl_path', nargs=1,
-                    help='calculate crosslinks from input list')
-parser.add_argument('-i', nargs=1,
-                    help='specify input pdb: -i <inputfile.pdb>')
-parser.add_argument('-aa1', nargs=1,
-                    help='specify start amino acid (three letter code e.g. LYS)')
-parser.add_argument('-aa2', nargs=1,
-                    help='specify end amino acid (three letter code e.g. LYS)')
-parser.add_argument('-max_dist', nargs=1,
-                    help='specify maximum crosslink distance in Angstroms')
-parser.add_argument('-vox', nargs=1,
-                    help='specify voxel size of grid')
-parser.add_argument('-surface', action="store_true",
-                    help='use higher accuracy method to calculate solvent accessibility - requires '
-                    'Freesasa installation')
-parser.add_argument('-ncpus', nargs=1,
-                    help='specify number of cpus to use')
-
-args = parser.parse_args()
-
-if args.lys:
-    aa1 = "LYS"
-    aa2 = "LYS"
-
-elif args.xl_path:
-    xl_path = args.xl_path[0]
-
-elif args.aa1:
-    if args.aa2:
-        aa1 = args.aa1[0].upper()
-        aa2 = args.aa2[0].upper()
-        # catch any dodgy typing
-        if aa1 not in amino_acids or aa2 not in amino_acids:
-            print("ERROR: Please type amino acid in three letter code format")
-            sys.exit(2)
-    else:
-        print("Please specify both aa1 AND aa2 if you want to use this option")
-        sys.exit(2)
-
-if args.max_dist:
-    max_dist = int(args.max_dist[0])
-
-if args.i:
-    pdb_path = args.i[0]
-
-if args.vox:
-    vox = int(args.vox[0])
-
-if args.surface:
-    surface = True
-
-if args.ncpus:
-    ncpus = int(args.ncpus[0])
-
-#######################################
-
 
 def runJwalk(pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', ncpus=mp.cpu_count()):
     """
@@ -194,4 +101,94 @@ def runJwalk(pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', ncpus
 
 
 if __name__ == "__main__":
+    # default parameters
+    max_dist = 60
+    vox = 1
+    surface = False
+    xl_path = ''
+    aa1 = "LYS"
+    aa2 = "LYS"
+    ncpus = mp.cpu_count()
+    pdb = ''
+
+    amino_acids = {
+        "LYS": "lysines",
+        "CYS": "cysteines",
+        "ASP": "acidic residues",
+        "GLU": "acidic residues",
+        "VAL": "valines",
+        "ILE": "isoleucines",
+        "LEU": "leucines",
+        "ARG": "arginines",
+        "PRO": "prolines",
+        "GLY": "glycines",
+        "ALA": "alanines",
+        "TRP": "tryptophans",
+        "PHE": "phenylalanines",
+        "SER": "serines",
+        "GLN": "glutamines",
+        "HIS": "histidines",
+        "MET": "methionines",
+        "THR": "threonines",
+        "ASN": "asparagines",
+        "TYR": "tyrosines"}
+
+    parser = argparse.ArgumentParser(description='JWALK: Calculate SASDs on your target PDB files')
+
+    parser.add_argument('-lys', action="store_true",
+                        help='calculate lysine crosslinks (default)')
+    parser.add_argument('-xl_path', nargs=1,
+                        help='calculate crosslinks from input list')
+    parser.add_argument('-i', nargs=1,
+                        help='specify input pdb: -i <inputfile.pdb>')
+    parser.add_argument('-aa1', nargs=1,
+                        help='specify start amino acid (three letter code e.g. LYS)')
+    parser.add_argument('-aa2', nargs=1,
+                        help='specify end amino acid (three letter code e.g. LYS)')
+    parser.add_argument('-max_dist', nargs=1,
+                        help='specify maximum crosslink distance in Angstroms')
+    parser.add_argument('-vox', nargs=1,
+                        help='specify voxel size of grid')
+    parser.add_argument('-surface', action="store_true",
+                        help='use higher accuracy method to calculate solvent accessibility - '
+                        'requires Freesasa installation')
+    parser.add_argument('-ncpus', nargs=1,
+                        help='specify number of cpus to use')
+
+    args = parser.parse_args()
+
+    if args.lys:
+        aa1 = "LYS"
+        aa2 = "LYS"
+
+    elif args.xl_path:
+        xl_path = args.xl_path[0]
+
+    elif args.aa1:
+        if args.aa2:
+            aa1 = args.aa1[0].upper()
+            aa2 = args.aa2[0].upper()
+            # catch any dodgy typing
+            if aa1 not in amino_acids or aa2 not in amino_acids:
+                print("ERROR: Please type amino acid in three letter code format")
+                sys.exit(2)
+        else:
+            print("Please specify both aa1 AND aa2 if you want to use this option")
+            sys.exit(2)
+
+    if args.max_dist:
+        max_dist = int(args.max_dist[0])
+
+    if args.i:
+        pdb_path = args.i[0]
+
+    if args.vox:
+        vox = int(args.vox[0])
+
+    if args.surface:
+        surface = True
+
+    if args.ncpus:
+        ncpus = int(args.ncpus[0])
+
     runJwalk(pdb_path, max_dist, vox, surface, xl_path, aa1, aa2, ncpus)

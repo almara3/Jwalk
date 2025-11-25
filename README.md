@@ -12,11 +12,13 @@ pip install .
 
 ```
 
+Make sure freesasa is installed!
+
 ## RUNNING JWALK
 
 Jwalk currently only runs on Unix or Linux based operating systems (sorry !)
 
-type "jwalk" plus any of the below flags:
+type "jwalk.py" plus any of the below flags:
 ```
 -h, --help        show this help message and exit
 -lys              calculate lysine crosslinks (default)
