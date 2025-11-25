@@ -23,10 +23,11 @@ type "jwalk.py" plus any of the below flags:
 -h, --help        show this help message and exit
 -lys              calculate lysine crosslinks (default)
 -xl_list XL_LIST  calculate crosslinks from input list (see Examples)
--i I              specify input pdb: -i <inputfile.pdb>   (default runs on every .pdb in directory)
+-i I              specify input pdb: -i <inputfile.pdb>   (.cif also supported)
 -aa1 AA1          specify starting amino-acid via three letter code eg. HIS
 -aa2 AA2          specify starting amino-acid via three letter code eg. TYR
 -surface          use higher accuracy method to calculate solvent accessibility - slower
+-output           output directory (default: Jwalk_results)
 ```
 if no flags are added, Jwalk will calculate the SASDs between all lysine residues on
 every .pdb file in the directory.

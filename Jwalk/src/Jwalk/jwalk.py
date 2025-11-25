@@ -29,7 +29,9 @@ import multiprocessing as mp
 from Jwalk import PDBTools, GridTools, SurfaceTools, SASDTools
 
 
-def runJwalk(pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', ncpus=mp.cpu_count()):
+def runJwalk(
+        pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', output_dir='Jwalk_results',
+        ncpus=mp.cpu_count()):
     """
         Execute Jwalk with processed command line options
 
@@ -54,6 +56,7 @@ def runJwalk(pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', ncpus
         crosslink_pairs, aa1_CA, aa2_CA = GridTools.mark_CAlphas_pairs(
             grid, structure_instance, xl_path)
         xl_path_basename = os.path.basename(xl_path)[:-4]
+        xl_path_basename = "_" + xl_path_basename
     elif aa1 and aa2:
         crosslink_pairs = []  # na if searching every combination between residue types
         aa1_CA, aa2_CA = GridTools.markCAlphas(grid, structure_instance, aa1, aa2)
@@ -91,8 +94,10 @@ def runJwalk(pdb_path, max_dist, vox, surface, xl_path='', aa1='', aa2='', ncpus
     sasds = SASDTools.get_euclidean_distances(sasds, pdb_path, aa1, aa2)
 
     # output sasds to .pdb file and .txt file
-    PDBTools.write_sasd_to_txt(sasds, pdb_path, xl_path_basename)
-    PDBTools.write_sasd_to_pdb(dens_map, sasds, pdb_path, xl_path_basename)
+    os.makedirs(output_dir, exist_ok=True)
+    output_base = os.path.join(output_dir, f'{os.path.basename(pdb_path)[:-4]}{xl_path_basename}')
+    PDBTools.write_sasd_to_txt(sasds, pdb_path, output_base)
+    PDBTools.write_sasd_to_pdb(dens_map, sasds, pdb_path, output_base)
     print(len(sasds), "SASDs calculated")
 
     aas_on_path = PDBTools.get_aas_on_path(sasds, structure_instance, dens_map)
@@ -152,6 +157,8 @@ if __name__ == "__main__":
     parser.add_argument('-surface', action="store_true",
                         help='use higher accuracy method to calculate solvent accessibility - '
                         'requires Freesasa installation')
+    parser.add_argument('-output', nargs=1,
+                        help='output directory (default: Jwalk_results)')
     parser.add_argument('-ncpus', nargs=1,
                         help='specify number of cpus to use')
 
@@ -188,7 +195,10 @@ if __name__ == "__main__":
     if args.surface:
         surface = True
 
+    if args.output:
+        output_dir = args.output[0]
+
     if args.ncpus:
         ncpus = int(args.ncpus[0])
 
-    runJwalk(pdb_path, max_dist, vox, surface, xl_path, aa1, aa2, ncpus)
+    runJwalk(pdb_path, max_dist, vox, surface, xl_path, aa1, aa2, output_dir, ncpus)

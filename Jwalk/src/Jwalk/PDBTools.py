@@ -555,7 +555,7 @@ def get_aas_on_path(sasds, structure_instance, dens_map):
     return aas_on_path
 
 
-def write_sasd_to_txt(sasds, pdb, xl_list_basename):
+def write_sasd_to_txt(sasds, pdb, output_base):
     """
     Outputs sasds to .tsv file
 
@@ -565,19 +565,12 @@ def write_sasd_to_txt(sasds, pdb, xl_list_basename):
            dictionary of sasds
         *pdb*
            .pdb file sasds were calculated on
-        *xl_list_basename*
-            base name of the crosslink list file
+        *output_base*
+           base name for output files
     """
+    os.makedirs(os.path.dirname(output_base), exist_ok=True)
 
-    if not os.path.exists('./Jwalk_results'):
-        os.makedirs('./Jwalk_results')
-
-    if xl_list_basename != "" and not xl_list_basename.startswith("_"):
-        xl_list_basename = "_" + xl_list_basename
-
-    with open(f'./Jwalk_results/{os.path.basename(pdb)[:-4]}{xl_list_basename}_crosslink_list.tsv',
-              'w') as outf:
-
+    with open(f'{output_base}_crosslink_list.tsv', 'w') as outf:
         outf.write('\t'.join('{0:<13}'.format(col) for col in [
             'Index', 'Model', 'Atom1', 'Atom2', 'SASD', 'Euclidean Distance']))
         outf.write('\n')
@@ -596,22 +589,22 @@ def write_sasd_to_txt(sasds, pdb, xl_list_basename):
             index += 1
 
 
-def write_sasd_to_pdb(dens_map, sasds, pdb, xl_list_basename):
+def write_sasd_to_pdb(dens_map, sasds, pdb, output_base):
     """
     Outputs sasds to .pdb file
 
     Arguments:
 
-       *dens_map*
-           Solvent accessible surface on masked array
-       *sasds*
-           dictionary of sasds
-       *pdb*
-           .pdb file sasds were calculated on
+        *dens_map*
+            Solvent accessible surface on masked array
+        *sasds*
+            dictionary of sasds
+        *pdb*
+            .pdb file sasds were calculated on
+        *output_base*
+            base name for output files
     """
-
-    if not os.path.exists('./Jwalk_results'):
-        os.makedirs('./Jwalk_results')
+    os.makedirs(os.path.dirname(output_base), exist_ok=True)
 
     apix = dens_map.apix
     origin = dens_map.origin
@@ -624,11 +617,7 @@ def write_sasd_to_pdb(dens_map, sasds, pdb, xl_list_basename):
 
         path_coord[xl] = a
 
-    if xl_list_basename != "" and not xl_list_basename.startswith("_"):
-        xl_list_basename = "_" + xl_list_basename
-
-    with open(f'./Jwalk_results/{os.path.basename(pdb)[:-4]}{xl_list_basename}_crosslinks.pdb',
-              'w') as pdb:
+    with open(f'{output_base}_crosslinks.pdb', 'w') as pdb:
 
         m_count = 1
         for xl in path_coord:
