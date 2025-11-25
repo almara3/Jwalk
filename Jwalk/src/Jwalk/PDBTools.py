@@ -21,7 +21,7 @@
 # ===============================================================================
 
 from numpy import array, append
-from Bio.PDB import PDBParser as PDBParserBiopy
+from Bio.PDB import PDBParser, MMCIFParser
 import os
 
 
@@ -466,8 +466,22 @@ class BioPyAtom:
 
 
 def read_PDB_file(filename, hetatm=False, water=False):
-    # hydrogens are omitted.
-    p = PDBParserBiopy(QUIET=True)  # permissive default True
+    """
+    Reads a PDB file and returns a Structure instance.
+    Arguments:
+        *filename*
+            path to PDB file
+        *hetatm*
+            include HETATM records
+        *water*
+            include water molecules
+    Returns:
+        Structure instance of the PDB file
+    """
+    if filename[-4:] == '.cif':
+        p = MMCIFParser(QUIET=True)
+    else:
+        p = PDBParser(QUIET=True)  # permissive default True
     structure = p.get_structure("id", filename)
 
     atomList = []
